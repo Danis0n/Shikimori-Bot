@@ -30,11 +30,10 @@ public class CallbackQueryHandler {
         callbackAnswer.setChatId(String.valueOf(chatId));
         String data = callbackQuery.getData();
         switch (data){
-            case"buttonDeleteUser":
-                callbackAnswer.setText("Введите номер пользователя");
-                botStateCash.saveBotState(userId, BotState.ENTERNUMBERUSER);
+            case"buttonMore":
+                callbackAnswer.setText("Введите номер тайтла");
+                botStateCash.saveBotState(userId, BotState.ENTERNUMBERTITLEFORMORE);
                 return callbackAnswer;
-
         }
         return callbackAnswer;
     }

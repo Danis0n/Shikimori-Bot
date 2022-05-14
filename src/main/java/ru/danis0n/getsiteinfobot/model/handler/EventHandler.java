@@ -53,7 +53,6 @@ public class EventHandler {
         for(User user : users){
             builder.append(++i).append(" ").append(buildUser(user));
         }
-
         replyMessage.setText(String.valueOf(builder));
         return replyMessage;
     }
@@ -61,7 +60,7 @@ public class EventHandler {
     public SendMessage showAuthor(long userId) {
         SendMessage replyMessage = new SendMessage();
         replyMessage.setChatId(String.valueOf(userId));
-        replyMessage.setText("Телеграм-Шикимори-Бот. Версия 0.1. Автор: Danis0n");
+        replyMessage.setText("Телеграм-Шикимори-Бот. Версия 0.2. Автор: Danis0n");
         return replyMessage;
     }
 
@@ -85,6 +84,7 @@ public class EventHandler {
             builder.append(++i).append(" ").append(buildTitle(title)).append("\n");
         }
         replyMessage.setText(String.valueOf(builder));
+        replyMessage.setReplyMarkup(menuService.getInlineMessageButtonsAnime());
         return replyMessage;
     }
 
@@ -139,5 +139,44 @@ public class EventHandler {
         parser.setTitles(parser.getOngoings(parser.getOngoingsFromSite("https://shikimori.one")));
         botStateCash.saveBotState(userId,BotState.SHOWPOPULARONGOINGS);
         return new SendMessage(String.valueOf(userId),"Загружаем информацию..");
+    }
+
+    public StringBuilder buildFullInfoTitle(AnimeTitle title, String type,
+                                            String currentEpisodes, String nextEpisode,
+                                            String duration
+    )
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append(buildTitle(title)).append("\n").
+                append("Тип: ").append(type).append("\n").
+                append("Эпизоды: ").append(currentEpisodes).append("\n").
+                append("Следующий эпизод: ").append(nextEpisode).append("\n").
+                append("Длительность эпизода: ").append(duration);
+        return builder;
+    }
+
+    public SendMessage getInfoAboutTitle(Message message, long userId) {
+        SendMessage replyMessage = new SendMessage();
+        replyMessage.setChatId(String.valueOf(userId));
+        AnimeTitle title;
+
+        try {
+            title = parser.getTitles().get(Integer.parseInt(message.getText()) - 1);
+        } catch (IndexOutOfBoundsException | NumberFormatException e){
+            replyMessage.setText("Неверный id");
+            return replyMessage;
+        }
+
+        List<String> titleProperties = parser.parseTitle(title.getUrl());
+
+        StringBuilder builder = buildFullInfoTitle(
+                title,
+                titleProperties.get(0), // type
+                titleProperties.get(1), // episodes
+                titleProperties.get(2), // next episode date
+                titleProperties.get(3)  // duration
+        );
+        replyMessage.setText(String.valueOf(builder));
+        return replyMessage;
     }
 }

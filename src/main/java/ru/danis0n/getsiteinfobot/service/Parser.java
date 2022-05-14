@@ -52,24 +52,37 @@ public class Parser {
         List<AnimeTitle> titles = new ArrayList<>();
 
         for(String el : ongoings){
-            titles.add(parseTitle(el));
+            titles.add(parseTitleOngoing(el));
         }
         return titles;
     }
 
-
-    private AnimeTitle parseTitle(String page){
-        if(page == null){
+    private AnimeTitle parseTitleOngoing(String url){
+        if(url == null){
             return new AnimeTitle("Unknown","Unknown","Unknown");
         }
 
-        String url = page.substring(page.indexOf("href=") + 6);
-        url = url.substring(0,url.indexOf("\""));
+        String page = url.substring(url.indexOf("href=") + 6);
+        page = page.substring(0,page.indexOf("\""));
 
         // Name
-        String name = page.substring(page.indexOf("title=") + 7);
+        String name = url.substring(url.indexOf("title=") + 7);
         name = name.substring(0,name.indexOf("\""));
-        return new AnimeTitle(name,"InProcess",url);
+        return new AnimeTitle(name,"InProcess",page);
     }
+
+    public List<String> parseTitle(String url){
+        Document page = getPage(url);
+        if(page == null){ return null; }
+
+        Elements elements = page.select("div[class=value]");
+
+        List<String> values = new ArrayList<>();
+        for(int i = 0; i < 4; i++){
+            values.add(elements.get(i).text());
+        }
+        return values;
+    }
+
 
 }
