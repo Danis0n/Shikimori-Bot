@@ -53,6 +53,8 @@ public class MessageHandler {
                 return eventHandler.showAnime(userId);
             case"ENTERNUMBERUSER":
                 return eventHandler.removeUser(message,userId);
+            case"ENTERNUMBERTITLEFORMORE":
+                return eventHandler.getInfoAboutTitle(message,userId);
             default:    
                 throw new IllegalStateException("Unexpected value: " + botState);
         }

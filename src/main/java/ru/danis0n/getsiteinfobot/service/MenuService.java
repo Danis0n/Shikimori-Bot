@@ -102,4 +102,19 @@ public class MenuService {
         return inlineKeyboardMarkup;
     }
 
+    public ReplyKeyboard getInlineMessageButtonsAnime() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+
+        InlineKeyboardButton buttonMore = new InlineKeyboardButton();
+        buttonMore.setText("Подробнее");
+        buttonMore.setCallbackData("buttonMore");
+
+        List<InlineKeyboardButton> keyboardButtons = new ArrayList<>();
+        keyboardButtons.add(buttonMore);
+
+        List<List<InlineKeyboardButton>> row = new ArrayList<>();
+        row.add(keyboardButtons);
+        inlineKeyboardMarkup.setKeyboard(row);
+        return inlineKeyboardMarkup;
+    }
 }
