@@ -61,7 +61,7 @@ public class EventHandler {
     public SendMessage showAuthor(long userId) {
         SendMessage replyMessage = new SendMessage();
         replyMessage.setChatId(String.valueOf(userId));
-        replyMessage.setText("Телеграм-Шикимори-Бот. Версия 0.1. Автор: Danis0n");
+        replyMessage.setText("Телеграм-Шикимори-Бот. Версия 0.2. Автор: Danis0n");
         return replyMessage;
     }
 
