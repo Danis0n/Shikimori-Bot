@@ -7,6 +7,7 @@ import ru.danis0n.getsiteinfobot.DAO.UserDAO;
 import ru.danis0n.getsiteinfobot.cash.BotStateCash;
 import ru.danis0n.getsiteinfobot.model.BotState;
 import ru.danis0n.getsiteinfobot.service.MenuService;
+import ru.danis0n.getsiteinfobot.service.Parser;
 
 @Component
 public class MessageHandler {
@@ -15,12 +16,14 @@ public class MessageHandler {
     private final MenuService menuService;
     private final EventHandler eventHandler;
     private final BotStateCash botStateCash;
+    private final Parser parser;
 
-    public MessageHandler(UserDAO userDAO, MenuService menuService, EventHandler eventHandler, BotStateCash botStateCash) {
+    public MessageHandler(UserDAO userDAO, MenuService menuService, EventHandler eventHandler, BotStateCash botStateCash, Parser parser) {
         this.userDAO = userDAO;
         this.menuService = menuService;
         this.eventHandler = eventHandler;
         this.botStateCash = botStateCash;
+        this.parser = parser;
     }
 
     public SendMessage handle(Message message, BotState botState) {
@@ -48,7 +51,9 @@ public class MessageHandler {
                 return eventHandler.showOngoings(userId);
             case"SHOWANIME":
                 return eventHandler.showAnime(userId);
-            default:
+            case"ENTERNUMBERUSER":
+                return eventHandler.removeUser(message,userId);
+            default:    
                 throw new IllegalStateException("Unexpected value: " + botState);
         }
     }

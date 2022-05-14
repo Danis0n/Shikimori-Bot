@@ -29,7 +29,6 @@ public class UserDAO {
         userRepository.delete(user);
     }
 
-
     public void save(User user) {
         userRepository.save(user);
     }

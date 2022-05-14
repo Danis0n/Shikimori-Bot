@@ -18,12 +18,14 @@ import java.util.List;
 public class MenuService {
 
     private final UserDAO userDAO;
+    private final Parser parser;
 
     @Value("${telegrambot.adminId}")
     private int adminId;
 
-    public MenuService(UserDAO userDAO){
+    public MenuService(UserDAO userDAO, Parser parser){
         this.userDAO = userDAO;
+        this.parser = parser;
     }
 
     private boolean isAdmin(long userId){
@@ -33,6 +35,10 @@ public class MenuService {
     public SendMessage getMainMenuMessage(final long chatId, final String textMessage, final long userId){
         final ReplyKeyboardMarkup replyKeyboardMarkup = getMainMenuKeyboard(userId);
         return createMessageWithKeyboard(chatId, textMessage, replyKeyboardMarkup);
+    }
+
+    public SendMessage getAnimeOngoingsMessage(final long chadId, final String textMessage, final long userId){
+        return null;
     }
 
     // sends the text message
@@ -64,13 +70,18 @@ public class MenuService {
             adminPanel.add(new KeyboardButton("Все пользователи"));
             keyboard.add(adminPanel);
         }
-        
+
         KeyboardRow aboutPanel = new KeyboardRow();
         aboutPanel.add(new KeyboardButton("Об авторе"));
+        aboutPanel.add(new KeyboardButton("Помощь"));
         keyboard.add(aboutPanel);
 
         replyKeyboardMarkup.setKeyboard(keyboard);
         return replyKeyboardMarkup;
+    }
+
+    public ReplyKeyboardMarkup getAnimeTitles(long userId){
+        return null;
     }
 
     public ReplyKeyboard getInlineMessageButtonsAllUsers() {

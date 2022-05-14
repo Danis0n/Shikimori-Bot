@@ -61,6 +61,10 @@ public class TelegramFacade {
                 break;
             case"Онгоинги":
                 botState = BotState.SHOWPOPULARONGOINGS;
+                break;
+            case"Помощь":
+                botState = BotState.HELP;
+                break;
             case"Об авторе":
                 botState = BotState.SHOWABOUTAUTHOR;
                 break;
