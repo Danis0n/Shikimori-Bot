@@ -65,6 +65,11 @@ public class MenuService {
         ongoingsPanel.add(new KeyboardButton("Онгоинги"));
         keyboard.add(ongoingsPanel);
 
+        KeyboardRow topPanel = new KeyboardRow();
+        topPanel.add(new KeyboardButton("Топ Аниме"));
+        topPanel.add(new KeyboardButton("Топ Манги"));
+        keyboard.add(topPanel);
+
         if(isAdmin(userId)){
             KeyboardRow adminPanel = new KeyboardRow();
             adminPanel.add(new KeyboardButton("Все пользователи"));
@@ -91,11 +96,11 @@ public class MenuService {
         buttonDeleteUser.setText("Delete user");
         buttonDeleteUser.setCallbackData("buttonDeleteUser");
 
-        List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-        keyboardButtonsRow1.add(buttonDeleteUser);
+        List<InlineKeyboardButton> keyboardButtons = new ArrayList<>();
+        keyboardButtons.add(buttonDeleteUser);
 
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        rowList.add(keyboardButtonsRow1);
+        rowList.add(keyboardButtons);
 
         inlineKeyboardMarkup.setKeyboard(rowList);
 
@@ -117,4 +122,7 @@ public class MenuService {
         inlineKeyboardMarkup.setKeyboard(row);
         return inlineKeyboardMarkup;
     }
+
+
+
 }
