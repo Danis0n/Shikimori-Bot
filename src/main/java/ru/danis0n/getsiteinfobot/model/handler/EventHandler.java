@@ -3,6 +3,7 @@ package ru.danis0n.getsiteinfobot.model.handler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.danis0n.getsiteinfobot.DAO.UserDAO;
 import ru.danis0n.getsiteinfobot.cash.BotStateCash;
@@ -59,8 +60,11 @@ public class EventHandler {
 
     public SendMessage showAuthor(long userId) {
         SendMessage replyMessage = new SendMessage();
+        SendPhoto sendPhoto = new SendPhoto();
+        sendPhoto.setChatId(String.valueOf(userId));
+
         replyMessage.setChatId(String.valueOf(userId));
-        replyMessage.setText("Телеграм-Шикимори-Бот. Версия 0.2. Автор: Danis0n");
+        replyMessage.setText("Телеграм-Шикимори-Бот. Версия 0.2. Автор: Danis0n\n Гитхаб: https://github.com/Danis0n");
         return replyMessage;
     }
 
@@ -72,7 +76,7 @@ public class EventHandler {
     }
 
     public SendMessage showOngoings(long userId) {
-        parser.setTitles(parser.getOngoings(parser.getOngoingsFromSite("https://shikimori.one")));
+        parser.setTitles(parser.getTopAnimeFromString(parser.getOngoingsFromSite("https://shikimori.one")));
 
         SendMessage replyMessage = new SendMessage();
         replyMessage.setChatId(String.valueOf(userId));
@@ -135,23 +139,29 @@ public class EventHandler {
         return sendMessage;
     }
 
-    public SendMessage prepareOngoings(long userId) {
-        parser.setTitles(parser.getOngoings(parser.getOngoingsFromSite("https://shikimori.one")));
-        botStateCash.saveBotState(userId,BotState.SHOWPOPULARONGOINGS);
-        return new SendMessage(String.valueOf(userId),"Загружаем информацию..");
-    }
-
     public StringBuilder buildFullInfoTitle(AnimeTitle title, String type,
                                             String currentEpisodes, String nextEpisode,
-                                            String duration
+                                            String duration, String imgSrc
     )
     {
         StringBuilder builder = new StringBuilder();
+
+        // КОСТЫЛЬ
+        if(!currentEpisodes.contains("/")){
+            builder.append(buildTitle(title)).append("\n").
+                    append("Тип: ").append(type).append("\n").
+                    append("Эпизоды: ").append(currentEpisodes).append("\n").
+                    append("Длительность эпизода: ").append(nextEpisode).
+                    append("\n").append(imgSrc);
+        }
+        else{
         builder.append(buildTitle(title)).append("\n").
                 append("Тип: ").append(type).append("\n").
                 append("Эпизоды: ").append(currentEpisodes).append("\n").
                 append("Следующий эпизод: ").append(nextEpisode).append("\n").
-                append("Длительность эпизода: ").append(duration);
+                append("Длительность эпизода: ").append(duration).
+                append("\n").append(imgSrc);
+        }
         return builder;
     }
 
@@ -174,9 +184,37 @@ public class EventHandler {
                 titleProperties.get(0), // type
                 titleProperties.get(1), // episodes
                 titleProperties.get(2), // next episode date
-                titleProperties.get(3)  // duration
+                titleProperties.get(3), // duration
+                titleProperties.get(4)  // img
+
         );
         replyMessage.setText(String.valueOf(builder));
+        return replyMessage;
+    }
+
+    public SendMessage showTopAnime(long userId) {
+        SendMessage replyMessage = new SendMessage();
+        replyMessage.setChatId(String.valueOf(userId));
+
+        parser.setTitles(parser.getTopAnimeFromString(parser.getTopAnimeStringsFromSite("https://shikimori.one/animes")));
+
+        StringBuilder builder = new StringBuilder();
+        List<AnimeTitle> titles = parser.getTitles();
+
+        int i = 0;
+        for(AnimeTitle title : titles){
+            builder.append(++i).append(" ").append(buildTitle(title)).append("\n");
+        }
+        replyMessage.setText(String.valueOf(builder));
+        replyMessage.setReplyMarkup(menuService.getInlineMessageButtonsAnime());
+        return replyMessage;
+    }
+
+    public SendMessage showTopManga(long userId) {
+        SendMessage replyMessage = new SendMessage();
+        replyMessage.setChatId(String.valueOf(userId));
+
+        replyMessage.setReplyMarkup(menuService.getInlineMessageButtonsAnime());
         return replyMessage;
     }
 }

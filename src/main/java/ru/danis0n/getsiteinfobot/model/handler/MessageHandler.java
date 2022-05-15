@@ -43,19 +43,21 @@ public class MessageHandler {
                 return menuService.getMainMenuMessage(chatId,"Воспользуйтесь главным меню",userId);
             case"SHOWABOUTAUTHOR":
                 return eventHandler.showAuthor(userId);
+            case"SHOWTOPANIME":
+                return eventHandler.showTopAnime(userId);
+            case"SHOWTOPMANGA":
+                return eventHandler.showTopManga(userId);
             case"HELP":
                 return eventHandler.showHelp(userId);
             case"SHOWALLUSERS":
                 return eventHandler.getAllUsers(userId);
-            case"SHOWPOPULARONGOINGS":
+            case"SHOWONGOINGS":
                 return eventHandler.showOngoings(userId);
-            case"SHOWANIME":
-                return eventHandler.showAnime(userId);
             case"ENTERNUMBERUSER":
                 return eventHandler.removeUser(message,userId);
             case"ENTERNUMBERTITLEFORMORE":
                 return eventHandler.getInfoAboutTitle(message,userId);
-            default:    
+            default:
                 throw new IllegalStateException("Unexpected value: " + botState);
         }
     }

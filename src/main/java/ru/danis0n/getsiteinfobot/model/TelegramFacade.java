@@ -12,8 +12,6 @@ import ru.danis0n.getsiteinfobot.cash.BotStateCash;
 import ru.danis0n.getsiteinfobot.model.handler.CallbackQueryHandler;
 import ru.danis0n.getsiteinfobot.model.handler.MessageHandler;
 
-import javax.imageio.plugins.tiff.BaselineTIFFTagSet;
-
 //TODO : IMPLEMENT BASIC LOGIC
 //TODO : LEARN ABOUT JSON PROPERTIES
 //TODO : LEARN ABOUT @AllArgsConstructor/@ToString/@JsonIgnoreProperties
@@ -60,7 +58,13 @@ public class TelegramFacade {
                 botState = BotState.START;
                 break;
             case"Онгоинги":
-                botState = BotState.SHOWPOPULARONGOINGS;
+                botState = BotState.SHOWONGOINGS;
+                break;
+            case"Топ Аниме":
+                botState = BotState.SHOWTOPANIME;
+                break;
+            case"Топ Манга":
+                botState = BotState.SHOWTOPMANGA;
                 break;
             case"Помощь":
                 botState = BotState.HELP;

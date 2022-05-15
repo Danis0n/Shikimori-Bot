@@ -21,16 +21,50 @@ public class Parser {
 
     private List<AnimeTitle> titles;
 
-    private Document getPage(String url){
+    private Document getPage(String url) {
         try {
-            return Jsoup.parse(new URL(url),3000);
+            return Jsoup.parse(new URL(url), 3000);
         } catch (IOException e) {
             System.out.println("Не удалось подключиться!");
         }
         return null;
     }
 
-    public List<String> getOngoingsFromSite(String url){
+    private String getImgSrc(String url){
+        Document page = getPage(url);
+
+        assert page != null;
+        Element img = page.select("img[src]").first();
+
+        assert img != null;
+        String imgStr = img.toString();
+
+        String srcTmp = imgStr.substring(imgStr.indexOf("src=") + 5);
+        return srcTmp.substring(0,srcTmp.indexOf("\""));
+    }
+
+
+    public List<String> parseTitle(String url) {
+        Document page = getPage(url);
+        if (page == null) {
+            return null;
+        }
+
+        Elements elements = page.select("div[class=value]");
+        Element src = page.select("img[src]").first();
+
+        List<String> values = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            values.add(elements.get(i).text());
+        }
+        assert src != null;
+        values.add(getImgSrc(url));
+
+        return values;
+    }
+
+    // returns all popular ongoings from main page of shikimori
+    public List<String> getOngoingsFromSite(String url) {
         Document page = getPage(url);
 
         // path to ongoings
@@ -42,47 +76,52 @@ public class Parser {
         Elements anime = sitePage.select("a[class]");
 
         List<String> fullPaths = new ArrayList<>();
-        for(Element el : anime){
+        for (Element el : anime) {
             fullPaths.add(el.toString());
         }
         return fullPaths;
     }
 
-    public List<AnimeTitle> getOngoings(List<String> ongoings){
+
+
+    public List<String> getTopAnimeStringsFromSite(String url) {
+        Document page = getPage(url);
+
+        // path to anime
+        assert page != null;
+        Elements titles = page.select("a[data-delay=150]");
+
+        List<String> animePath = new ArrayList<>();
+
+        for (Element el : titles) {
+            animePath.add(el.toString());
+        }
+
+        return animePath;
+    }
+
+    // converts titleStrings to object AnimeTitles
+    public List<AnimeTitle> getTopAnimeFromString(List<String> strings) {
         List<AnimeTitle> titles = new ArrayList<>();
 
-        for(String el : ongoings){
-            titles.add(parseTitleOngoing(el));
+        for (String el : strings) {
+            titles.add(parseTitleTopFromString(el));
         }
         return titles;
     }
 
-    private AnimeTitle parseTitleOngoing(String url){
-        if(url == null){
-            return new AnimeTitle("Unknown","Unknown","Unknown");
+    // converts titleString to object AnimeTitle
+    public AnimeTitle parseTitleTopFromString(String titleString) {
+        if (titleString == null) {
+            return new AnimeTitle("Unknown", "Unknown", "Unknown","Unknown");
         }
+            String tmUrl = titleString.substring(titleString.indexOf("href=") + 6);
+            String url = tmUrl.substring(0, tmUrl.indexOf("\""));
 
-        String page = url.substring(url.indexOf("href=") + 6);
-        page = page.substring(0,page.indexOf("\""));
+            String tmpName = titleString.substring(titleString.indexOf("title=") + 7);
+            String name = tmpName.substring(0, tmpName.indexOf("\""));
 
-        // Name
-        String name = url.substring(url.indexOf("title=") + 7);
-        name = name.substring(0,name.indexOf("\""));
-        return new AnimeTitle(name,"InProcess",page);
+            return new AnimeTitle(name, "inProcess", url,null);
     }
-
-    public List<String> parseTitle(String url){
-        Document page = getPage(url);
-        if(page == null){ return null; }
-
-        Elements elements = page.select("div[class=value]");
-
-        List<String> values = new ArrayList<>();
-        for(int i = 0; i < 4; i++){
-            values.add(elements.get(i).text());
-        }
-        return values;
-    }
-
 
 }
