@@ -82,8 +82,6 @@ public class Parser {
         return fullPaths;
     }
 
-
-
     public List<String> getTopAnimeStringsFromSite(String url) {
         Document page = getPage(url);
 

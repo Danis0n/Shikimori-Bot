@@ -34,10 +34,9 @@ public class CallbackQueryHandler {
                 callbackAnswer.setText("Введите номер тайтла");
                 botStateCash.saveBotState(userId, BotState.ENTERNUMBERTITLEFORMORE);
                 return callbackAnswer;
-            case"buttonGithub":
-                callbackAnswer.setText("Ссылочка --->");
-                botStateCash.saveBotState(userId,BotState.SHOWGITHUB);
-//                System.out.println(botStateCash.getBotStateMap().get(userId));
+            case"buttonSelect":
+                callbackAnswer.setText("Введите номера/номер жанров");
+                botStateCash.saveBotState(userId,BotState.ENTERNUMBERGENRE);
                 return callbackAnswer;
         }
         return callbackAnswer;

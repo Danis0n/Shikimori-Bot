@@ -67,7 +67,7 @@ public class MenuService {
 
         KeyboardRow topPanel = new KeyboardRow();
         topPanel.add(new KeyboardButton("Топ Аниме"));
-        topPanel.add(new KeyboardButton("Топ Манги"));
+        topPanel.add(new KeyboardButton("Показать жанры"));
         keyboard.add(topPanel);
 
         if(isAdmin(userId)){
@@ -124,5 +124,19 @@ public class MenuService {
     }
 
 
+    public ReplyKeyboard getInlineMessageButtonsGenres() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 
+        InlineKeyboardButton buttonSelect = new InlineKeyboardButton();
+        buttonSelect.setText("Выбрать аниме по жанру");
+        buttonSelect.setCallbackData("buttonSelect");
+
+        List<InlineKeyboardButton> keyboardButtons = new ArrayList<>();
+        keyboardButtons.add(buttonSelect);
+
+        List<List<InlineKeyboardButton>> row = new ArrayList<>();
+        row.add(keyboardButtons);
+        inlineKeyboardMarkup.setKeyboard(row);
+        return inlineKeyboardMarkup;
+    }
 }

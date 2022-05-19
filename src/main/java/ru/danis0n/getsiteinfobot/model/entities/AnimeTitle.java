@@ -9,9 +9,13 @@ import lombok.Setter;
 public class AnimeTitle {
 
     private String name;
+
     private String url;
+
     private String studio;
+
     private String imgUrl;
+
     public AnimeTitle(){
     }
 
