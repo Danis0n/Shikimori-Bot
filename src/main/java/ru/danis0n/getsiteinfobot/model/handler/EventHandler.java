@@ -68,7 +68,7 @@ public class EventHandler {
         sendPhoto.setChatId(String.valueOf(userId));
 
         replyMessage.setChatId(String.valueOf(userId));
-        replyMessage.setText("Телеграм-Шикимори-Бот. Версия 0.2. Автор: Danis0n\n Гитхаб: https://github.com/Danis0n");
+        replyMessage.setText("Телеграм-Шикимори-Бот. Версия 0.5. Автор: Danis0n\n Гитхаб: https://github.com/Danis0n");
         return replyMessage;
     }
 
