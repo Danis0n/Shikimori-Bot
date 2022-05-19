@@ -8,6 +8,7 @@ import ru.danis0n.getsiteinfobot.cash.BotStateCash;
 import ru.danis0n.getsiteinfobot.model.BotState;
 import ru.danis0n.getsiteinfobot.service.MenuService;
 import ru.danis0n.getsiteinfobot.service.Parser;
+import ru.danis0n.getsiteinfobot.service.ParserGenre;
 
 @Component
 public class MessageHandler {
@@ -17,12 +18,14 @@ public class MessageHandler {
     private final EventHandler eventHandler;
     private final BotStateCash botStateCash;
     private final Parser parser;
+    private final ParserGenre parserGenre;
 
-    public MessageHandler(UserDAO userDAO, MenuService menuService, EventHandler eventHandler, BotStateCash botStateCash, Parser parser) {
+    public MessageHandler(UserDAO userDAO, MenuService menuService, EventHandler eventHandler, BotStateCash botStateCash, Parser parser, ParserGenre parserGenre) {
         this.userDAO = userDAO;
         this.menuService = menuService;
         this.eventHandler = eventHandler;
         this.botStateCash = botStateCash;
+        this.parserGenre = parserGenre;
         this.parser = parser;
     }
 
@@ -42,11 +45,12 @@ public class MessageHandler {
             case"START":
                 return menuService.getMainMenuMessage(chatId,"Воспользуйтесь главным меню",userId);
             case"SHOWABOUTAUTHOR":
+                System.out.println(parserGenre.parseStringsToGenres(parserGenre.getGenresStringsFromSite("https://shikimori.one/animes/menu")));
                 return eventHandler.showAuthor(userId);
             case"SHOWTOPANIME":
                 return eventHandler.showTopAnime(userId);
-            case"SHOWTOPMANGA":
-                return eventHandler.showTopManga(userId);
+            case"SHOWGENRES":
+                return eventHandler.showGenres(userId);
             case"HELP":
                 return eventHandler.showHelp(userId);
             case"SHOWALLUSERS":
@@ -57,6 +61,8 @@ public class MessageHandler {
                 return eventHandler.removeUser(message,userId);
             case"ENTERNUMBERTITLEFORMORE":
                 return eventHandler.getInfoAboutTitle(message,userId);
+            case"ENTERNUMBERGENRE":
+                return eventHandler.getTitlesByGenre(message,userId);
             default:
                 throw new IllegalStateException("Unexpected value: " + botState);
         }

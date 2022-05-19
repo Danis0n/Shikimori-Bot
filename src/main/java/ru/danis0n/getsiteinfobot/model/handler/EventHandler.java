@@ -9,9 +9,11 @@ import ru.danis0n.getsiteinfobot.DAO.UserDAO;
 import ru.danis0n.getsiteinfobot.cash.BotStateCash;
 import ru.danis0n.getsiteinfobot.model.BotState;
 import ru.danis0n.getsiteinfobot.model.entities.AnimeTitle;
+import ru.danis0n.getsiteinfobot.model.entities.Genre;
 import ru.danis0n.getsiteinfobot.model.entities.User;
 import ru.danis0n.getsiteinfobot.service.MenuService;
 import ru.danis0n.getsiteinfobot.service.Parser;
+import ru.danis0n.getsiteinfobot.service.ParserGenre;
 
 import java.util.List;
 
@@ -22,15 +24,17 @@ public class EventHandler {
     private final BotStateCash botStateCash;
     private final MenuService menuService;
     private final Parser parser;
+    private final ParserGenre parserGenre;
 
     @Value("${telegrambot.adminId}")
     private int adminId;
 
-    public EventHandler(UserDAO userDAO, BotStateCash botStateCash, MenuService menuService, Parser parser) {
+    public EventHandler(UserDAO userDAO, BotStateCash botStateCash, MenuService menuService, Parser parser, ParserGenre parserGenre) {
         this.userDAO = userDAO;
         this.botStateCash = botStateCash;
         this.menuService = menuService;
         this.parser = parser;
+        this.parserGenre = parserGenre;
     }
 
     public SendMessage saveNewUser(Message message, long userId, SendMessage replyMessage) {
@@ -210,10 +214,57 @@ public class EventHandler {
         return replyMessage;
     }
 
-    public SendMessage showTopManga(long userId) {
+    public SendMessage showGenres(long userId) {
         SendMessage replyMessage = new SendMessage();
         replyMessage.setChatId(String.valueOf(userId));
 
+        parserGenre.setGenres(parserGenre.parseStringsToGenres(parserGenre.getGenresStringsFromSite("https://shikimori.one/animes/menu")));
+
+        StringBuilder builder = new StringBuilder();
+        List<Genre> genres = parserGenre.getGenres();
+
+        int i = 0;
+        for (Genre genre : genres){
+            builder.append(++i).append(" ").append(buildGenre(genre)).append("\n");
+        }
+
+        replyMessage.setText(String.valueOf(builder));
+        replyMessage.setReplyMarkup(menuService.getInlineMessageButtonsGenres());
+        return replyMessage;
+    }
+
+    private StringBuilder buildGenre(Genre genre){
+        StringBuilder builder = new StringBuilder();
+        return builder.append(genre.getGenre());
+    }
+
+    public SendMessage getTitlesByGenre(Message message, long userId) {
+        SendMessage replyMessage = new SendMessage();
+        replyMessage.setChatId(String.valueOf(userId));
+
+        String url = "https://shikimori.one/animes/genre/";
+
+        Genre genre;
+        try{
+            genre = parserGenre.getGenres().get(Integer.parseInt(message.getText()) - 1);
+        }catch (IndexOutOfBoundsException | NumberFormatException e){
+            replyMessage.setText("Неверный id");
+            return replyMessage;
+        }
+        url += genre.getLink();
+
+        parser.setTitles(parser.getTopAnimeFromString(parser.getTopAnimeStringsFromSite(url)));
+
+        StringBuilder builder = new StringBuilder();
+        List<AnimeTitle> titles = parser.getTitles();
+
+        int i = 0;
+        builder.append(genre.getGenre()).append("\n");
+        for(AnimeTitle title : titles){
+            builder.append(++i).append(" ").append(buildTitle(title)).append("\n");
+        }
+
+        replyMessage.setText(String.valueOf(builder));
         replyMessage.setReplyMarkup(menuService.getInlineMessageButtonsAnime());
         return replyMessage;
     }

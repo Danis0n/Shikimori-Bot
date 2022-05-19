@@ -63,8 +63,8 @@ public class TelegramFacade {
             case"Топ Аниме":
                 botState = BotState.SHOWTOPANIME;
                 break;
-            case"Топ Манга":
-                botState = BotState.SHOWTOPMANGA;
+            case"Показать жанры":
+                botState = BotState.SHOWGENRES;
                 break;
             case"Помощь":
                 botState = BotState.HELP;
