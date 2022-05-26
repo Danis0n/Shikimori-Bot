@@ -1,25 +1,23 @@
 package ru.danis0n.getsiteinfobot.model.handler;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import ru.danis0n.getsiteinfobot.cash.BotStateCash;
+import ru.danis0n.getsiteinfobot.cash.BotStateCache;
 import ru.danis0n.getsiteinfobot.model.BotState;
-import ru.danis0n.getsiteinfobot.service.MenuService;
 
 @Component
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CallbackQueryHandler {
 
-    private final BotStateCash botStateCash;
-    private final MenuService menuService;
-    private final EventHandler eventHandler;
+    final BotStateCache botStateCache;
 
     @Autowired
-    public CallbackQueryHandler(BotStateCash botStateCash, MenuService menuService, EventHandler eventHandler) {
-        this.botStateCash = botStateCash;
-        this.menuService = menuService;
-        this.eventHandler = eventHandler;
+    public CallbackQueryHandler(BotStateCache botStateCache) {
+        this.botStateCache = botStateCache;
     }
 
     public SendMessage processCallbackQuery(CallbackQuery callbackQuery) {
@@ -32,14 +30,13 @@ public class CallbackQueryHandler {
         switch (data){
             case"buttonMore":
                 callbackAnswer.setText("Введите номер тайтла");
-                botStateCash.saveBotState(userId, BotState.ENTERNUMBERTITLEFORMORE);
+                botStateCache.saveBotState(userId, BotState.ENTERNUMBERTITLEFORMORE);
                 return callbackAnswer;
             case"buttonSelect":
                 callbackAnswer.setText("Введите номера/номер жанров");
-                botStateCash.saveBotState(userId,BotState.ENTERNUMBERGENRE);
+                botStateCache.saveBotState(userId,BotState.ENTERNUMBERGENRE);
                 return callbackAnswer;
         }
         return callbackAnswer;
     }
-
 }

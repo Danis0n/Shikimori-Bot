@@ -1,12 +1,12 @@
 package ru.danis0n.getsiteinfobot.model.handler;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.danis0n.getsiteinfobot.DAO.UserDAO;
-import ru.danis0n.getsiteinfobot.cash.BotStateCash;
+import ru.danis0n.getsiteinfobot.cash.BotStateCache;
 import ru.danis0n.getsiteinfobot.model.BotState;
 import ru.danis0n.getsiteinfobot.model.entities.AnimeTitle;
 import ru.danis0n.getsiteinfobot.model.entities.Genre;
@@ -18,24 +18,14 @@ import ru.danis0n.getsiteinfobot.service.ParserGenre;
 import java.util.List;
 
 @Component
+@AllArgsConstructor
 public class EventHandler {
 
     private final UserDAO userDAO;
-    private final BotStateCash botStateCash;
+    private final BotStateCache botStateCache;
     private final MenuService menuService;
     private final Parser parser;
     private final ParserGenre parserGenre;
-
-    @Value("${telegrambot.adminId}")
-    private int adminId;
-
-    public EventHandler(UserDAO userDAO, BotStateCash botStateCash, MenuService menuService, Parser parser, ParserGenre parserGenre) {
-        this.userDAO = userDAO;
-        this.botStateCash = botStateCash;
-        this.menuService = menuService;
-        this.parser = parser;
-        this.parserGenre = parserGenre;
-    }
 
     public SendMessage saveNewUser(Message message, long userId, SendMessage replyMessage) {
         String userName = message.getFrom().getUserName();
@@ -44,7 +34,7 @@ public class EventHandler {
         user.setName(userName);
         userDAO.save(user);
         replyMessage.setText("Добро пожаловать на огонёк к моему боту! =)");
-        botStateCash.saveBotState(userId, BotState.START);
+        botStateCache.saveBotState(userId, BotState.START);
         return replyMessage;
     }
 
@@ -75,7 +65,11 @@ public class EventHandler {
     public SendMessage showHelp(long userId) {
         SendMessage replyMessage = new SendMessage();
         replyMessage.setChatId(String.valueOf(userId));
-        replyMessage.setText("Данная функция находится в разработке! Ожидайте обновления");
+        replyMessage.setText("Список всех доступных команд представлен в виде виртуальной клавиатуры.\n" +
+                "Онгоинги - выводит в чат популярные на данный момент незаконченные аниме тайтлы\n" +
+                "Топ аниме - выводит в чат самые популярные аниме тайтлы за всё время\n" +
+                "Показать жанры - выводит в чат все доступные на данный момент жанры\n" +
+                "Об авторе - выводит в чат всю необходимую информацию об авторе");
         return replyMessage;
     }
 
@@ -93,13 +87,6 @@ public class EventHandler {
         }
         replyMessage.setText(String.valueOf(builder));
         replyMessage.setReplyMarkup(menuService.getInlineMessageButtonsAnime());
-        return replyMessage;
-    }
-
-    public SendMessage showAnime(long userId) {
-        SendMessage replyMessage = new SendMessage();
-        replyMessage.setChatId(String.valueOf(userId));
-        replyMessage.setText("Данная функция находится в разработке! Ожидайте обновления");
         return replyMessage;
     }
 
@@ -137,7 +124,7 @@ public class EventHandler {
         }
 
         userDAO.removeUser(user);
-        botStateCash.saveBotState(userId,BotState.START);
+        botStateCache.saveBotState(userId,BotState.START);
 
         sendMessage.setText("Удаление пользователя произошло успешно");
         return sendMessage;
@@ -150,7 +137,6 @@ public class EventHandler {
     {
         StringBuilder builder = new StringBuilder();
 
-        // КОСТЫЛЬ
         if(!currentEpisodes.contains("/")){
             builder.append(buildTitle(title)).append("\n").
                     append("Тип: ").append(type).append("\n").
@@ -176,12 +162,12 @@ public class EventHandler {
 
         try {
             title = parser.getTitles().get(Integer.parseInt(message.getText()) - 1);
-        } catch (IndexOutOfBoundsException | NumberFormatException e){
+        } catch (IndexOutOfBoundsException | NumberFormatException | NullPointerException e){
             replyMessage.setText("Неверный id");
             return replyMessage;
         }
 
-        List<String> titleProperties = parser.parseTitle(title.getUrl());
+        List<String> titleProperties = parser.parseTitleFormItsPage(title.getUrl());
 
         StringBuilder builder = buildFullInfoTitle(
                 title,

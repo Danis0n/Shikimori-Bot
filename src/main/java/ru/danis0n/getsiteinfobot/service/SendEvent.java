@@ -10,7 +10,6 @@ import ru.danis0n.getsiteinfobot.model.TelegramBot;
 //thread with event
 public class SendEvent extends Thread {
 
-    private long eventCashId;
     private SendMessage sendMessage;
 
     public SendEvent() {
