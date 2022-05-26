@@ -37,10 +37,6 @@ public class MenuService {
         return createMessageWithKeyboard(chatId, textMessage, replyKeyboardMarkup);
     }
 
-    public SendMessage getAnimeOngoingsMessage(final long chadId, final String textMessage, final long userId){
-        return null;
-    }
-
     // sends the text message
     private SendMessage createMessageWithKeyboard(final long charId, String textMessage, final ReplyKeyboardMarkup replyKeyboardMarkup) {
         final SendMessage sendMessage = new SendMessage();

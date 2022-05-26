@@ -1,17 +1,18 @@
 package ru.danis0n.getsiteinfobot.model.entities;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Genre {
 
-    private Long id;
-
-    private String genre;
-
-    private String link;
+    Long id;
+    String genre;
+    String link;
 
     public Genre(){
     }
@@ -20,5 +21,4 @@ public class Genre {
         this.genre = genre;
         this.link = link;
     }
-
 }

@@ -1,20 +1,20 @@
 package ru.danis0n.getsiteinfobot.model.entities;
 
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AnimeTitle {
 
-    private String name;
-
-    private String url;
-
-    private String studio;
-
-    private String imgUrl;
+    String name;
+    String url;
+    String studio;
+    String imgUrl;
 
     public AnimeTitle(){
     }
@@ -25,5 +25,4 @@ public class AnimeTitle {
         this.url = url;
         this.imgUrl = imgUrl;
     }
-
 }

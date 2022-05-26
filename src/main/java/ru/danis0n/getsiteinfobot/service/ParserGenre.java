@@ -1,7 +1,9 @@
 package ru.danis0n.getsiteinfobot.service;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,16 +19,17 @@ import java.util.List;
 @Component
 @Setter
 @Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ParserGenre {
 
-    private List<Genre> genres;
-    private Parser parser;
+    List<Genre> genres;
+    Parser parser;
 
     protected Document getPage(String url) {
         try {
             return Jsoup.parse(new URL(url), 3000);
         } catch (IOException e) {
-            System.out.println("�� ������� ������������!");
+            System.out.println("Не удалось подключиться!");
         }
         return null;
     }
@@ -76,5 +79,4 @@ public class ParserGenre {
 
         return strings;
     }
-
 }

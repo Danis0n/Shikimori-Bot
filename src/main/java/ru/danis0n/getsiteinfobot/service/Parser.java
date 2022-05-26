@@ -1,7 +1,9 @@
 package ru.danis0n.getsiteinfobot.service;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,14 +16,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 @Getter
 @Setter
+@Component
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Parser {
 
-    private List<AnimeTitle> titles;
+    List<AnimeTitle> titles;
 
-    private Document getPage(String url) {
+    protected Document getPage(String url) {
         try {
             return Jsoup.parse(new URL(url), 3000);
         } catch (IOException e) {
@@ -30,7 +33,7 @@ public class Parser {
         return null;
     }
 
-    private String getImgSrc(String url){
+    private String getImgSrc(String url) {
         Document page = getPage(url);
 
         assert page != null;
@@ -40,11 +43,11 @@ public class Parser {
         String imgStr = img.toString();
 
         String srcTmp = imgStr.substring(imgStr.indexOf("src=") + 5);
-        return srcTmp.substring(0,srcTmp.indexOf("\""));
+        return srcTmp.substring(0, srcTmp.indexOf("\""));
     }
 
 
-    public List<String> parseTitle(String url) {
+    public List<String> parseTitleFormItsPage(String url) {
         Document page = getPage(url);
         if (page == null) {
             return null;
@@ -103,23 +106,22 @@ public class Parser {
         List<AnimeTitle> titles = new ArrayList<>();
 
         for (String el : strings) {
-            titles.add(parseTitleTopFromString(el));
+            titles.add(parseTitleFromString(el));
         }
         return titles;
     }
 
     // converts titleString to object AnimeTitle
-    public AnimeTitle parseTitleTopFromString(String titleString) {
+    public AnimeTitle parseTitleFromString(String titleString) {
         if (titleString == null) {
-            return new AnimeTitle("Unknown", "Unknown", "Unknown","Unknown");
+            return null;
         }
-            String tmUrl = titleString.substring(titleString.indexOf("href=") + 6);
-            String url = tmUrl.substring(0, tmUrl.indexOf("\""));
+        String tmUrl = titleString.substring(titleString.indexOf("href=") + 6);
+        String url = tmUrl.substring(0, tmUrl.indexOf("\""));
 
-            String tmpName = titleString.substring(titleString.indexOf("title=") + 7);
-            String name = tmpName.substring(0, tmpName.indexOf("\""));
+        String tmpName = titleString.substring(titleString.indexOf("title=") + 7);
+        String name = tmpName.substring(0, tmpName.indexOf("\""));
 
-            return new AnimeTitle(name, "inProcess", url,null);
+        return new AnimeTitle(name, "inProcess", url, null);
     }
-
 }

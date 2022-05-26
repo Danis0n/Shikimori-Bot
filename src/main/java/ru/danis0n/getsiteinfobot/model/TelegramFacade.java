@@ -8,14 +8,10 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import ru.danis0n.getsiteinfobot.cash.BotStateCash;
+import ru.danis0n.getsiteinfobot.DAO.StateDAO;
+import ru.danis0n.getsiteinfobot.cash.BotStateCache;
 import ru.danis0n.getsiteinfobot.model.handler.CallbackQueryHandler;
 import ru.danis0n.getsiteinfobot.model.handler.MessageHandler;
-
-//TODO : IMPLEMENT BASIC LOGIC
-//TODO : LEARN ABOUT JSON PROPERTIES
-//TODO : LEARN ABOUT @AllArgsConstructor/@ToString/@JsonIgnoreProperties
-
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -23,15 +19,17 @@ public class TelegramFacade {
 
     final MessageHandler messageHandler;
     final CallbackQueryHandler callbackQueryHandler;
-    final BotStateCash botStateCash;
+    final BotStateCache botStateCache;
+    final StateDAO stateDAO;
 
     @Value("${telegrambot.adminId}")
     int adminId;
 
-    public TelegramFacade(MessageHandler messageHandler, CallbackQueryHandler callbackQueryHandler, BotStateCash botStateCash) {
+    public TelegramFacade(MessageHandler messageHandler, CallbackQueryHandler callbackQueryHandler, BotStateCache botStateCache, StateDAO stateDAO) {
         this.messageHandler = messageHandler;
         this.callbackQueryHandler = callbackQueryHandler;
-        this.botStateCash = botStateCash;
+        this.botStateCache = botStateCache;
+        this.stateDAO = stateDAO;
     }
 
     public SendMessage handleUpdate(Update update) {
@@ -77,10 +75,9 @@ public class TelegramFacade {
                 else botState = BotState.START;
                 break;
             default:
-                botState = botStateCash.getBotStateMap().get(message.getFrom().getId()) == null?
-                        BotState.START: botStateCash.getBotStateMap().get(message.getFrom().getId());
+                botState = botStateCache.getBotStateMap().get(message.getFrom().getId()) == null?
+                        BotState.valueOf(stateDAO.findByStateId(message.getFrom().getId()).getState()) : botStateCache.getBotStateMap().get(message.getFrom().getId());
         }
         return messageHandler.handle(message,botState);
     }
-
 }
